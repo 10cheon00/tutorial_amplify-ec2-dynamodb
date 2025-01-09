@@ -28,23 +28,18 @@ jobs:
       with:
         java-version: 11
 
-    - name: Move backend folder
-      run: |
-        ls -al
-        cd backend
-        pwd
-        ls -al
-    
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x backend/gradlew
     
     # Gradle build (Test 제외)
     - name: Build with Gradle
-      run: ./gradlew clean build -x test
+      run: backend/gradlew clean build -x test
       
     # 압축 파일 만들기
     - name: Make Zip File
-      run: zip -qq -r ./$GITHUB_SHA.zip .
+      run: |
+        cd backend
+        zip -qq -r ./$GITHUB_SHA.zip .
       shell: bash
       
     # AWS 인증
@@ -57,7 +52,9 @@ jobs:
       
     # S3 버킷으로 파일을 업로드
     - name: Upload to S3
-      run: aws s3 cp --region ${{ env.AWS_REGION }} ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+      run: |
+        cd backend
+        aws s3 cp --region ${{ env.AWS_REGION }} ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
     # S3 버킷에 업로드 된 파일을 대상으로 CodeDeploy에서 배포 요청
     - name: Code Deploy
