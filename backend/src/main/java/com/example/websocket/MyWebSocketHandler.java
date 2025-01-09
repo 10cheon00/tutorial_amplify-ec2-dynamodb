@@ -16,7 +16,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
     final WebSocketMessage<String> connectionEstablishedMessage = new TextMessage("{\"message\":\"You have joined the room.\"}");
     final WebSocketMessage<String> newUserJoinedMessage = new TextMessage("{\"message\":\"A new user has joined the room.\"}");
-    final WebSocketMessage<String> connectionClosedMessage = new TextMessage("\"message\":\"Some user has left the room.\"}");
+    final WebSocketMessage<String> connectionClosedMessage = new TextMessage("{\"message\":\"Some user has left the room.\"}");
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -61,7 +61,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         createSessionLog(sessionId, "Connection closed.");
 
         for (WebSocketSession s : sessions.values()) {
-            s.sendMessage(connectionClosedMessage);
+            if (s.isOpen()) {
+                s.sendMessage(connectionClosedMessage);
+            }
         }
 
 
