@@ -24,27 +24,15 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
+      # 3. Gradle 빌드
       - name: Build with Gradle
         working-directory: backend
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build
+      -name: Zip build result
+        run: zip -qq -r ./deployment.zip .
+        shell: bash
 
-      - name: Verify JAR file exists
-        run: |
-          if [ ! -f backend/build/libs/*.jar ]; then
-            echo "Error: No JAR file found in build/libs. Build may have failed."
-            exit 1
-          fi
-
-      - name: Create deployment artifact
-        run: |
-          mkdir -p backend/deployment
-          cp backend/build/libs/*.jar backend/deployment/application.jar
-          cp appspec.yml backend/deployment/
-          cp -r scripts backend/deployment/
-          cd backend/deployment
-          zip -r deployment.zip .
-
+      # 4. AWS CLI 자격 증명 설정
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -52,12 +40,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Upload deployment artifact to S3
-        run: aws s3 cp backend/deployment/deployment.zip s3://${{ env.S3_BUCKET_NAME }}/
-
+      # 5. 빌드 결과물 S3 업로드
+      - name: Upload JAR to S3
+        run: aws s3 cp --region ap-northeast-2 ./deployment.zip s3://$BUCKET_NAME/application.zip
+		
+      # 6. EC2로 코드 배포
       - name: Deploy to EC2 via CodeDeploy
         run: |
           aws deploy create-deployment \
             --application-name ${{ env.CODEDEPLOY_APPLICATION_NAME }} \
             --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP_NAME }} \
-            --s3-location bucket=${{ env.S3_BUCKET_NAME }},key=deployment.zip,bundleType=zip
+            --s3-location bucket=${{ env.S3_BUCKET_NAME }},key=application.zip, bundleType=zip
