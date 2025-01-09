@@ -5,7 +5,7 @@ on:
     paths:
       - 'backend/**'
 
-env: # 환경변수 정의
+env:
   S3_BUCKET_NAME: my-websocket
   CODEDEPLOY_APPLICATION_NAME: WebSocketCodeDeploy
   CODEDEPLOY_DEPLOYMENT_GROUP_NAME: WebSocketCodeDeployGroup
@@ -25,15 +25,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-
       - name: Build with Gradle
         working-directory: backend
         run: ./gradlew clean build -x test
+
+      - name: Verify JAR file exists
+        run: |
+          if [ ! -f backend/build/libs/*.jar ]; then
+            echo "Error: No JAR file found in build/libs. Build may have failed."
+            exit 1
+          fi
 
       - name: Create deployment artifact
         run: |
