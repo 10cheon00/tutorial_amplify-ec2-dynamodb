@@ -31,7 +31,7 @@ jobs:
         working-directory: backend
         run: ./gradlew clean build
       - name: Zip build result
-        run: zip -qq -r ./$GITHUB_SHA.zip .
+        run: zip -qq -r ./$GITHUB_SHA.zip backend/
         shell: bash
 
       # 4. AWS CLI 자격 증명 설정
