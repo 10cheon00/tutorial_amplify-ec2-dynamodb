@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_NAME: websocket
+  PROJECT_NAME: websocket-server
   BUCKET_NAME: my-websocket
   CODE_DEPLOY_APP_NAME: WebSocketCodeDeploy
   DEPLOYMENT_GROUP_NAME: WebSocketCodeDeployGroup

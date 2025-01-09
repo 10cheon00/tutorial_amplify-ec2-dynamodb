@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_NAME: websocket
+  PROJECT_NAME: websocket-client
   BUCKET_NAME: my-websocket
 
 
