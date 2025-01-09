@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'backend/**'
+  workflow_dispatch:
+
 
 env:
   S3_BUCKET_NAME: arn:aws:s3:::my-websocket
