@@ -31,7 +31,9 @@ jobs:
     - name: Move backend folder
       run: |
         ls -al
-        cd ~/backend
+        cd backend
+        pwd
+        ls -al
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
