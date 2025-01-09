@@ -6,7 +6,7 @@ on:
       - 'backend/**'
 
 env:
-  S3_BUCKET_NAME: arn:aws:s3:::my-websocket
+  S3_BUCKET_NAME: my-websocket
   CODEDEPLOY_APPLICATION_NAME: WebSocketCodeDeploy
   CODEDEPLOY_DEPLOYMENT_GROUP_NAME: WebSocketCodeDeployGroup
   AWS_REGION: ap-northeast-2
