@@ -10,5 +10,6 @@ public class RoomController {
     @GetMapping
     public String foo() {
         return "foo";
+
     }
 }
