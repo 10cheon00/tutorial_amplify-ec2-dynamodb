@@ -7,7 +7,6 @@ const App = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // const ws = new WebSocket("ws://localhost:8080/chat");
     const ws = new WebSocket("ws://ec2-43-201-184-82.ap-northeast-2.compute.amazonaws.com:8080/chat");
 
     ws.onmessage = (event) => {
