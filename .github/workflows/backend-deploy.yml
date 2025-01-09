@@ -33,7 +33,9 @@ jobs:
     
     # Gradle build (Test 제외)
     - name: Build with Gradle
-      run: backend/gradlew clean build -x test
+      run: |
+        cd backend
+        ./gradlew clean build -x test
       
     # 압축 파일 만들기
     - name: Make Zip File
