@@ -1,0 +1,62 @@
+name: Deploy Backend to EC2 via CodeDeploy
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+env: # 환경변수 정의
+  S3_BUCKET_NAME: my-websocket
+  CODEDEPLOY_APPLICATION_NAME: WebSocketCodeDeploy
+  CODEDEPLOY_DEPLOYMENT_GROUP_NAME: WebSocketCodeDeployGroup
+  AWS_REGION: ap-northeast-2
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java and Gradle
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Build with Gradle
+        working-directory: backend
+        run: ./gradlew clean build -x test
+
+      - name: Create deployment artifact
+        run: |
+          mkdir -p backend/deployment
+          cp backend/build/libs/*.jar backend/deployment/application.jar
+          cp appspec.yml backend/deployment/
+          cp -r scripts backend/deployment/
+          cd backend/deployment
+          zip -r deployment.zip .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload deployment artifact to S3
+        run: aws s3 cp backend/deployment/deployment.zip s3://${{ env.S3_BUCKET_NAME }}/
+
+      - name: Deploy to EC2 via CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ env.CODEDEPLOY_APPLICATION_NAME }} \
+            --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=${{ env.S3_BUCKET_NAME }},key=deployment.zip,bundleType=zip
