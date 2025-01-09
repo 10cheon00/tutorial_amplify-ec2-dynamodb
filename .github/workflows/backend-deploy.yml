@@ -48,4 +48,4 @@ jobs:
 
       # 6. EC2로 코드 배포
       - name: Deploy to EC2 via CodeDeploy
-        run: aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION_NAME }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP_NAME }} --s3-location bucket=${{ env.S3_BUCKET_NAME }},key=application.zip, bundleType=zip
+        run: aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION_NAME }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP_NAME }} --s3-location bucket=${{ env.S3_BUCKET_NAME }},key=application.zip,bundleType=zip
