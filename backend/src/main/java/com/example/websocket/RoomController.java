@@ -11,5 +11,4 @@ public class RoomController {
     public String foo() {
         return "foo";
     }
-
 }
