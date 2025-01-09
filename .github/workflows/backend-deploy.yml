@@ -29,7 +29,9 @@ jobs:
         java-version: 11
 
     - name: Move backend folder
-      run: cd backend
+      run: |
+        ls -al
+        cd ~/backend
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
