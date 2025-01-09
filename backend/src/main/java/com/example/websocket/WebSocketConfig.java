@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(myWebSocketHandler(), "/rooms").setAllowedOrigins("*");
+        registry.addHandler(myWebSocketHandler(), "/chat").setAllowedOrigins("*");
     }
 
     public WebSocketHandler myWebSocketHandler() {
